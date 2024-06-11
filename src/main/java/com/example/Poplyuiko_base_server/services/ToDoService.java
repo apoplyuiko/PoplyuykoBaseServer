@@ -1,47 +1,54 @@
 package com.example.Poplyuiko_base_server.services;
 
+import com.example.Poplyuiko_base_server.DTOs.CreateTodoDto;
 import com.example.Poplyuiko_base_server.models.ToDo;
 import com.example.Poplyuiko_base_server.repositories.ToDoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Validated
 public class ToDoService {
-    @Autowired
-    private ToDoRepository toDoRepository;
+    private final ToDoRepository toDoRepository;
 
-    public ToDoService(ToDoRepository toDoRepository) {
-        this.toDoRepository = toDoRepository;
+    public Page<ToDo> getAllToDos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return toDoRepository.findAll(pageable);
     }
 
-    public ToDo createNewToDo(ToDo task) {
-        return toDoRepository.save(task);
+    public Optional<ToDo> getTodoById(Long id) {
+        return toDoRepository.findById(id);
     }
 
-    public List<ToDo> getAllToDo() {
-        return toDoRepository.findAll();
+    public ToDo createTodo(@Valid CreateTodoDto createTodo) {
+        ToDo todo = new ToDo();
+        todo.setText(createTodo.getText());
+        return toDoRepository.save(todo);
     }
 
-    public ToDo findToDoById(Long id) {
-        return toDoRepository.getById(id);
+    @Transactional
+    public ToDo updateToDoStatus(Long id) {
+        ToDo toDo = toDoRepository.findById(id).orElseThrow(() -> new RuntimeException("ToDo not found"));
+        toDo.setStatus(!toDo.isStatus());
+        return toDoRepository.save(toDo);
     }
 
-    public List<ToDo> findAllCompletedToDo() {
-        return toDoRepository.findByCompletedTrue();
+    public void deleteTodo(Long id) {
+        toDoRepository.deleteById(id);
     }
 
-    public List<ToDo> findAllInCompleteToDo() {
-        return toDoRepository.findByCompletedFalse();
+    @Transactional
+    public void deleteAllCompletedToDos() {
+        toDoRepository.deleteByStatus(true);
     }
-
-    public void deleteToDo(Long toDo) {
-        toDoRepository.delete(toDo);
-    }
-
-    public ToDo updateToDo(ToDo task) {
-        return toDoRepository.save(task);
-    }
-
 }
+

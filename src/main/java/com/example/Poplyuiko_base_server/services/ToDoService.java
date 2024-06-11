@@ -35,10 +35,15 @@ public class ToDoService {
         return toDoRepository.save(todo);
     }
 
-    @Transactional
     public ToDo updateToDoStatus(Long id) {
         ToDo toDo = toDoRepository.findById(id).orElseThrow(() -> new RuntimeException("ToDo not found"));
         toDo.setStatus(!toDo.isStatus());
+        return toDoRepository.save(toDo);
+    }
+
+    public ToDo updateToDoText(Long id, String newText) {
+        ToDo toDo = toDoRepository.findById(id).orElseThrow(() -> new RuntimeException("ToDo not found"));
+        toDo.setText(newText);
         return toDoRepository.save(toDo);
     }
 

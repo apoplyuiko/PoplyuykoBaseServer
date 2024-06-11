@@ -53,6 +53,16 @@ public class ToDoController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/text/{id}")
+    public ResponseEntity<CustomSuccessResponse<ToDo>> updateToDoText(@PathVariable Long id, @Valid @RequestBody CreateTodoDto todo) {
+        ToDo updatedToDo = todoService.updateToDoText(id,todo.getText());
+        CustomSuccessResponse<ToDo> response = new CustomSuccessResponse<>();
+        response.setStatusCode(200);
+        response.setSuccess(true);
+        response.setData(updatedToDo);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
         todoService.deleteTodo(id);

@@ -8,9 +8,12 @@ import com.example.Poplyuiko_base_server.services.ToDoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -40,7 +43,10 @@ public class ToDoController {
 
     @PostMapping
     public ResponseEntity<ToDo> createTodo(@Valid @RequestBody CreateTodoDto todo) {
-        return ResponseEntity.ok(todoService.createTodo(todo));
+//        return ResponseEntity.ok(todoService.createTodo(todo));
+        ToDo createdTodo = todoService.createTodo(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
+
     }
 
     @PatchMapping("/status/{id}")
@@ -50,6 +56,16 @@ public class ToDoController {
         response.setStatusCode(200);
         response.setSuccess(true);
         response.setData(updatedToDo);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/status")
+    public ResponseEntity<CustomSuccessResponse<ToDo>> updateToDoAllStatus() {
+        List<ToDo> updatedToDo = todoService.updateToDoAllStatus();
+        CustomSuccessResponse<ToDo> response = new CustomSuccessResponse<>();
+        response.setStatusCode(200);
+        response.setSuccess(true);
+        response.setDataList(updatedToDo);
         return ResponseEntity.ok(response);
     }
 
@@ -66,6 +82,10 @@ public class ToDoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
         todoService.deleteTodo(id);
+        BaseSuccessResponse response;
+        response = new BaseSuccessResponse();
+        response.setStatusCode(200);
+        response.setSuccess(true);
         return ResponseEntity.noContent().build();
     }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,6 +40,15 @@ public class ToDoService {
         ToDo toDo = toDoRepository.findById(id).orElseThrow(() -> new RuntimeException("ToDo not found"));
         toDo.setStatus(!toDo.isStatus());
         return toDoRepository.save(toDo);
+    }
+
+    public List<ToDo> updateToDoAllStatus() {
+        var toDos = toDoRepository.findAll().stream().filter(todo -> !todo.isStatus()).toList();
+        toDos.forEach(item -> {
+            item.setStatus(true);
+            toDoRepository.save(item);
+        });
+        return toDos;
     }
 
     public ToDo updateToDoText(Long id, String newText) {

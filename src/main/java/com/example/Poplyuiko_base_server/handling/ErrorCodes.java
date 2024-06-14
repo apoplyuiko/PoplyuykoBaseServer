@@ -1,8 +1,13 @@
 package com.example.Poplyuiko_base_server.handling;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
+@AllArgsConstructor
 public enum ErrorCodes {
     UNKNOWN(0, "unknown"),
     USERNAME_SIZE_NOT_VALID(1, ValidationConstants.USERNAME_SIZE_NOT_VALID),
@@ -51,16 +56,15 @@ public enum ErrorCodes {
     USER_WITH_THIS_EMAIL_ALREADY_EXIST(46, ValidationConstants.USER_WITH_THIS_EMAIL_ALREADY_EXIST),
     HTTP_MESSAGE_NOT_READABLE_EXCEPTION(47, ValidationConstants.HTTP_MESSAGE_NOT_READABLE_EXCEPTION);
 
+    public static final Map<String, Integer> ERROR_CODE_MAP = new HashMap<>();
+
     private final int code;
+
     private final String message;
 
-    ErrorCodes(int code, ValidationConstants message) {
-        this.code = code;
-        this.message = message.getMessage();
-    }
-
-    ErrorCodes(int code, String message) {
-        this.code = code;
-        this.message = message;
+    static {
+        for (ErrorCodes errorCode : ErrorCodes.values()) {
+            ERROR_CODE_MAP.put(errorCode.message, errorCode.code);
+        }
     }
 }

@@ -1,19 +1,26 @@
 package com.example.Poplyuiko_base_server.controllers;
 
 import com.example.Poplyuiko_base_server.DTOs.BaseSuccessResponse;
+import com.example.Poplyuiko_base_server.DTOs.ChangeStatusToDoDto;
+import com.example.Poplyuiko_base_server.DTOs.ChangeTextTodoDto;
 import com.example.Poplyuiko_base_server.DTOs.CreateTodoDto;
 import com.example.Poplyuiko_base_server.DTOs.CustomSuccessResponse;
+import com.example.Poplyuiko_base_server.DTOs.GetNewsDto;
 import com.example.Poplyuiko_base_server.models.ToDo;
 import com.example.Poplyuiko_base_server.services.ToDoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
@@ -23,79 +30,43 @@ public class ToDoController {
     private final ToDoService todoService;
 
     @GetMapping
-    public ResponseEntity<CustomSuccessResponse<Page<ToDo>>> getAllTodos(@RequestParam(defaultValue = "0") int page,
-                                                                         @RequestParam(defaultValue = "10") int size) {
-        Page<ToDo> toDos = todoService.getAllToDos(page, size);
-        CustomSuccessResponse<Page<ToDo>> response = new CustomSuccessResponse<>();
-        response.setStatusCode(200);
-        response.setSuccess(true);
-        response.setData(toDos);
-        return ResponseEntity.ok(response);
-
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ToDo> getTodoById(@PathVariable Long id) {
-        return todoService.getTodoById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<
+            CustomSuccessResponse<
+                    GetNewsDto<ToDo>>> getPaginated(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int perPage) {
+        return ResponseEntity.ok(new CustomSuccessResponse<>(todoService.getAllToDos(page, perPage)));
     }
 
     @PostMapping
-    public ResponseEntity<ToDo> createTodo(@Valid @RequestBody CreateTodoDto todo) {
-//        return ResponseEntity.ok(todoService.createTodo(todo));
-        ToDo createdTodo = todoService.createTodo(todo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
+    public ResponseEntity<CustomSuccessResponse<ToDo>> create(@Valid @RequestBody CreateTodoDto todo) {
+        return ResponseEntity.ok(new CustomSuccessResponse<>(todoService.createTodo(todo)));
 
-    }
-
-    @PatchMapping("/status/{id}")
-    public ResponseEntity<CustomSuccessResponse<ToDo>> updateToDoStatus(@PathVariable Long id) {
-        ToDo updatedToDo = todoService.updateToDoStatus(id);
-        CustomSuccessResponse<ToDo> response = new CustomSuccessResponse<>();
-        response.setStatusCode(200);
-        response.setSuccess(true);
-        response.setData(updatedToDo);
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/status")
-    public ResponseEntity<CustomSuccessResponse<ToDo>> updateToDoAllStatus() {
-        List<ToDo> updatedToDo = todoService.updateToDoAllStatus();
-        CustomSuccessResponse<ToDo> response = new CustomSuccessResponse<>();
-        response.setStatusCode(200);
-        response.setSuccess(true);
-        response.setDataList(updatedToDo);
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/text/{id}")
-    public ResponseEntity<CustomSuccessResponse<ToDo>> updateToDoText(@PathVariable Long id, @Valid @RequestBody CreateTodoDto todo) {
-        ToDo updatedToDo = todoService.updateToDoText(id,todo.getText());
-        CustomSuccessResponse<ToDo> response = new CustomSuccessResponse<>();
-        response.setStatusCode(200);
-        response.setSuccess(true);
-        response.setData(updatedToDo);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
-        todoService.deleteTodo(id);
-        BaseSuccessResponse response;
-        response = new BaseSuccessResponse();
-        response.setStatusCode(200);
-        response.setSuccess(true);
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<BaseSuccessResponse> deleteAllCompletedToDos() {
-        todoService.deleteAllCompletedToDos();
-        BaseSuccessResponse response;
-        response = new BaseSuccessResponse();
-        response.setStatusCode(204);
-        response.setSuccess(true);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<BaseSuccessResponse> deleteAllReady() {
+        return ResponseEntity.ok(todoService.deleteAllCompletedToDos());
+    }
+
+    @PatchMapping("/status")
+    public ResponseEntity<BaseSuccessResponse> patch(@RequestBody ChangeStatusToDoDto dto) {
+        return ResponseEntity.ok(todoService.updateToDoAllStatus(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseSuccessResponse> delete(@PathVariable Long id) {
+        return ResponseEntity.ok(todoService.deleteTodo(id));
+    }
+
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<BaseSuccessResponse> patchStatus(@PathVariable Long id,
+                                                           @RequestBody ChangeStatusToDoDto dto) {
+        return ResponseEntity.ok(todoService.updateToDoStatus(id, dto));
+    }
+
+    @PatchMapping("/text/{id}")
+    public ResponseEntity<BaseSuccessResponse> patchText(@PathVariable Long id,
+                                                         @Valid @RequestBody ChangeTextTodoDto changeTextTodoDto) {
+        return ResponseEntity.ok(todoService.updateToDoText(id, changeTextTodoDto));
     }
 }

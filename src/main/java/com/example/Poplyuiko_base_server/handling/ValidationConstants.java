@@ -90,4 +90,8 @@ public interface ValidationConstants {
     String TASKS_PER_PAGE_LESS_OR_EQUAL_100 = "Tasks per page less or equal 100";
 
     String HTTP_MESSAGE_NOT_READABLE_EXCEPTION = "Http request not valid";
+
+    private void exampleMethod() {
+
+    }
 }

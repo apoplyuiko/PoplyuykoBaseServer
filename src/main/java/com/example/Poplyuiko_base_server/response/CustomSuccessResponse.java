@@ -1,4 +1,4 @@
-package com.example.Poplyuiko_base_server.DTOs;
+package com.example.Poplyuiko_base_server.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomSuccessResponse<T> extends BaseSuccessResponse {
-    private Integer code;
-
     private Boolean success = true;
 
     private T data;

@@ -15,10 +15,9 @@ import static com.example.Poplyuiko_base_server.handling.ValidationConstants.HTT
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseSuccessResponse>
-        handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<BaseSuccessResponse> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
         var e = ex.getBindingResult().getAllErrors();
         Integer err = e.stream()
                 .map(item -> ErrorCodes.ERROR_CODE_MAP.get(item.getDefaultMessage()))
@@ -26,16 +25,14 @@ public class GlobalExceptionHandler {
                 .orElse(0);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new BaseSuccessResponse(err, true, null));
+                .body(new BaseSuccessResponse(err));
     }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<BaseSuccessResponse> handleCustomException(CustomException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new BaseSuccessResponse(
-                        ErrorCodes.ERROR_CODE_MAP.get(
-                                ex.getErrorCodes().getMessage()), true, null));
+                .body(new BaseSuccessResponse(ex.getErrorCodes().getCode()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -44,7 +41,7 @@ public class GlobalExceptionHandler {
                 .map(err -> ErrorCodes.ERROR_CODE_MAP.get(err.getMessage())).toList();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new BaseSuccessResponse(errorCodes.get(0), true, errorCodes));
+                .body(new BaseSuccessResponse(errorCodes.get(0), errorCodes));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -52,7 +49,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new BaseSuccessResponse(ErrorCodes.ERROR_CODE_MAP
-                        .get(HTTP_MESSAGE_NOT_READABLE_EXCEPTION), true, null));
+                        .get(HTTP_MESSAGE_NOT_READABLE_EXCEPTION)));
     }
 
     @ExceptionHandler(InvalidDataAccessApiUsageException.class)
@@ -61,7 +58,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new BaseSuccessResponse(ErrorCodes.ERROR_CODE_MAP
-                        .get(ex.getMessage()), true, null));
+                        .get(ex.getMessage())));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -69,6 +66,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new BaseSuccessResponse(ErrorCodes.ERROR_CODE_MAP
-                        .get(HTTP_MESSAGE_NOT_READABLE_EXCEPTION), true, null));
+                        .get(HTTP_MESSAGE_NOT_READABLE_EXCEPTION)));
     }
 }

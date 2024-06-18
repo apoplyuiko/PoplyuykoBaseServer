@@ -10,11 +10,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class GetNewsDto<T> {
-    List<T> content;
+    private List<T> content;
 
-    long numberOfElements;
+    private long numberOfElements;
 
-    long ready;
+    private long ready;
 
-    long notReady;
+    private long notReady;
 }

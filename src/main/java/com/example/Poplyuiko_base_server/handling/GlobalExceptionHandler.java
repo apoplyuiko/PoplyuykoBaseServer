@@ -16,8 +16,7 @@ import static com.example.Poplyuiko_base_server.handling.ValidationConstants.HTT
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseSuccessResponse> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<BaseSuccessResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         var e = ex.getBindingResult().getAllErrors();
         Integer err = e.stream()
                 .map(item -> ErrorCodes.ERROR_CODE_MAP.get(item.getDefaultMessage()))

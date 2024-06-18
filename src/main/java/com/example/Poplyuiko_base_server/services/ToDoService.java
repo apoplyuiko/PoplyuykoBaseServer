@@ -56,7 +56,7 @@ public class ToDoService {
             item.setStatus(changeStatusToDoDto.getStatus());
         });
         toDoRepository.saveAll(tasks);
-        return new BaseSuccessResponse(1);
+        return new BaseSuccessResponse();
     }
 
     public BaseSuccessResponse updateToDoText(Long id, ChangeTextTodoDto changeTextTodoDto) {
@@ -77,7 +77,7 @@ public class ToDoService {
     @Transactional
     public BaseSuccessResponse deleteAllCompletedToDos() {
         toDoRepository.deleteByStatus(true);
-        return new BaseSuccessResponse(1);
+        return new BaseSuccessResponse();
     }
 }
 

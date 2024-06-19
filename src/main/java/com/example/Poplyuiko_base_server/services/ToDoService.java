@@ -20,7 +20,7 @@ public class ToDoService {
     private final ToDoRepository toDoRepository;
 
     public GetNewsDto<ToDo> getAllToDos(Integer page, Integer perPage, Boolean status) {
-        var listTask = toDoRepository.findAll(PageRequest.of(page, perPage));
+        var listTask = toDoRepository.findAll(PageRequest.of(page - 1, perPage));
         var countReady = toDoRepository.findAll().stream().filter(ToDo::isStatus).count();
         return new GetNewsDto<>(
                 listTask.stream()
@@ -50,20 +50,20 @@ public class ToDoService {
         return new BaseSuccessResponse();
     }
 
+    @Transactional
     public BaseSuccessResponse updateToDoAllStatus(ChangeStatusToDoDto changeStatusToDoDto) {
         var tasks = toDoRepository.findAll();
         tasks.forEach(item -> {
             item.setStatus(changeStatusToDoDto.getStatus());
         });
-        toDoRepository.saveAll(tasks);
         return new BaseSuccessResponse();
     }
 
+    @Transactional
     public BaseSuccessResponse updateToDoText(Long id, ChangeTextTodoDto changeTextTodoDto) {
         ToDo todo = toDoRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCodes.TASK_NOT_FOUND));
         todo.setText(changeTextTodoDto.getText());
-        toDoRepository.save(todo);
         return new BaseSuccessResponse();
     }
 

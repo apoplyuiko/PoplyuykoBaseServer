@@ -3,7 +3,6 @@ package com.example.Poplyuiko_base_server.response;
 import com.example.Poplyuiko_base_server.DTOs.GetNewsDto;
 import com.example.Poplyuiko_base_server.models.ToDo;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

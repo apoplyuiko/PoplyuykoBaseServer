@@ -42,11 +42,11 @@ public class ToDoService {
         return toDoRepository.save(todo);
     }
 
+    @Transactional
     public BaseSuccessResponse updateToDoStatus(Long id, ChangeStatusToDoDto changeStatusToDoDto) {
         ToDo todo = toDoRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCodes.TASK_NOT_FOUND));
         todo.setStatus(changeStatusToDoDto.getStatus());
-        toDoRepository.save(todo);
         return new BaseSuccessResponse();
     }
 
@@ -56,7 +56,7 @@ public class ToDoService {
         tasks.forEach(item -> {
             item.setStatus(changeStatusToDoDto.getStatus());
         });
-        return new BaseSuccessResponse();
+        return new BaseSuccessResponse(1);
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class ToDoService {
     @Transactional
     public BaseSuccessResponse deleteAllCompletedToDos() {
         toDoRepository.deleteByStatus(true);
-        return new BaseSuccessResponse();
+        return new BaseSuccessResponse(1);
     }
 }
 
